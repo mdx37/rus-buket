@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оптимизация брендбука - Презентация</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E600AD 0%, #8A00F4 100%);
+            color: #333;
+            height: 100vh;
+            position: relative;
+        }
+
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 100px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.37s ease-out;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #E600AD;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #E600AD;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #8A00F4;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li:before {
+            content: "•";
+            color: #E600AD;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -10%;
+            line-height: 1.8;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #E600AD, #8A00F4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .problem-box {
+            background: #f8f8f8;
+            border-left: 4px solid #E600AD;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box {
+            background: #f0f9ff;
+            border-left: 4px solid #8A00F4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .progress {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .navigation-hint {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .format-comparison {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .format-box {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .format-jpg {
+            background: #ffe5e5;
+            border: 2px solid #ff6b6b;
+        }
+
+        .format-png {
+            background: #e5f5ff;
+            border: 2px solid #4dabf7;
+        }
+
+        .format-svg {
+            background: #e5ffe5;
+            border: 2px solid #51cf66;
+        }
+
+        .checkmark-list li:before {
+            content: "✓";
+            color: #51cf66;
+            font-size: 1.2em;
+            font-weight: bold;
+            top: 0.15em;
+            line-height: 1;
+        }
+        
+        .problem-box ul li {
+            padding-left: 20px;
+        }
+        
+        .problem-box ul li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: 0;
+            line-height: 1.8;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        em {
+            font-style: italic;
+            color: #666;
+            display: block;
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-list {
+            counter-reset: action-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .action-list li {
+            counter-increment: action-counter;
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .action-list li:before {
+            content: counter(action-counter) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #8A00F4;
+            font-weight: 600;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .checkmark-list li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checkmark-list li:before {
+            content: "✓" !important;
+            color: #51cf66;
+            font-size: 1.2em;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0.05em;
+            line-height: 1;
+        }
+
+        em {
+            font-style: italic;
+            color: #666;
+            display: block;
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-list {
+            counter-reset: action-counter;
+        }
+
+        .action-list li {
+            counter-increment: action-counter;
+            padding-left: 50px;
+        }
+
+        .action-list li:before {
+            content: counter(action-counter) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #8A00F4;
+            font-weight: 600;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        /* Стили для финального слайда */
+        .final-slide a {
+            transition: all 0.3s ease;
+        }
+
+        .final-slide a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .site-link:hover {
+            background: #E600AD;
+            color: white !important;
+        }
+
+        .telegram-link:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(230, 0, 173, 0.4) !important;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            h2 {
+                font-size: 2em;
+            }
+            
+            .format-comparison {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Слайд 1: Заголовок -->
+        <div class="slide active">
+            <span class="slide-number">1 / 9</span>
+            <div class="fade-in">
+                <h1>Оптимизация брендбука для эффективной работы с дизайнерами</h1>
+                <p style="font-size: 1.5em; color: #8A00F4;">Анализ текущей ситуации и предложения по улучшению</p>
+            </div>
+        </div>
+
+        <!-- Слайд 2: Введение -->
+        <div class="slide">
+            <span class="slide-number">2 / 9</span>
+            <h2>Почему брендбук критически важен?</h2>
+            <ul>
+                <li><span class="highlight">Единый источник правды</span> — все фирменные элементы в одном месте</li>
+                <li><span class="highlight">Экономия времени</span> — новые дизайнеры быстро погружаются в проект</li>
+                <li><span class="highlight">Сохранение качества</span> — гарантия правильного использования айдентики</li>
+                <li><span class="highlight">Масштабирование</span> — легко работать с разными подрядчиками</li>
+            </ul>
+            <em>При частой смене дизайнеров качественный брендбук становится фундаментом стабильной визуальной коммуникации</em>
+        </div>
+
+        <!-- Слайд 3: Проблема 1 -->
+        <div class="slide">
+            <span class="slide-number">3 / 9</span>
+            <h2>Проблема №1: Растровый формат документа</h2>
+            
+            <div class="problem-box">
+                <h3>Текущая ситуация:</h3>
+                <p>Все элементы брендбука склеены в единое изображение</p>
+            </div>
+
+            <h3>Последствия:</h3>
+            <ul>
+                <li>Невозможно быстро извлечь логотип из документа</li>
+                <li>Дизайнеры тратят время на поиск файлов по разным папкам</li>
+                <li>Риск использования неактуальных версий</li>
+            </ul>
+
+            <div class="solution-box">
+                <h3>Решение:</h3>
+                <p>Векторный формат PDF с отдельными слоями для работы в Adobe Illustrator</p>
+            </div>
+        </div>
+
+        <!-- Слайд 4: Проблема 2 -->
+        <div class="slide">
+            <span class="slide-number">4 / 9</span>
+            <h2>Проблема №2: Текст недоступен для копирования</h2>
+            
+            <div class="problem-box">
+                <h3>Текущая ситуация:</h3>
+                <p>Вся текстовая информация превратилась в изображение</p>
+            </div>
+
+            <h3>Конкретный пример:</h3>
+            <p style="font-size: 1.3em; color: #E600AD;">Чтобы скопировать RGB-код фирменного цвета, дизайнер вынужден вручную перепечатывать значения</p>
+
+            <div class="solution-box">
+                <h3>Решение:</h3>
+                <p>Сохранение текстовых слоев в редактируемом виде</p>
+            </div>
+        </div>
+
+        <!-- Слайд 5: Проблема 3 -->
+        <div class="slide">
+            <span class="slide-number">5 / 9</span>
+            <h2>Проблема №3: Неправильный формат графических элементов</h2>
+            
+            <div class="problem-box">
+                <h3>Паттерны сохранены в JPG с белым фоном</h3>
+                <p><strong>Практические последствия:</strong></p>
+                <h3>Практические последствия:</h3>
+            <ul style="margin-top: 10px;">
+                <li>2 дизайнера отказались от использования паттернов</li>
+                <li>1 дизайнер потратил несколько часов на удаление фона</li>
+            </ul>
+            </div>
+
+            <h3>JPG vs PNG vs SVG:</h3>
+            <div class="format-comparison">
+                <div class="format-box format-jpg">
+                    <h4>JPG</h4>
+                    <p>Не поддерживает прозрачность</p>
+                </div>
+                <div class="format-box format-png">
+                    <h4>PNG</h4>
+                    <p>Поддерживает прозрачность, но растровый</p>
+                </div>
+                <div class="format-box format-svg">
+                    <h4>SVG</h4>
+                    <p>Векторный формат, идеален для логотипов и паттернов</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 6: Проблема 4 -->
+        <div class="slide">
+            <span class="slide-number">6 / 9</span>
+            <h2>Проблема №4: Качество представления элементов</h2>
+            
+            <div class="problem-box">
+                <h3>Наблюдение:</h3>
+                <p>На странице со стикерами заметна пикселизация логотипов</p>
+            </div>
+
+            <h3>Почему это важно:</h3>
+            <p style="font-size: 1.3em; line-height: 1.8;">Брендбук — это витрина бренда. Качество его исполнения отражает отношение к собственной айдентике и создает первое впечатление у новых сотрудников и партнеров</p>
+        </div>
+
+        <!-- Слайд 7: Итоги -->
+        <div class="slide">
+            <span class="slide-number">7 / 9</span>
+            <h2>Что даст обновление брендбука?</h2>
+            
+            <h3>Для новых дизайнеров:</h3>
+            <ul class="checkmark-list">
+                <li>Полное погружение из одного файла</li>
+                <li>Нет необходимости искать дополнительные материалы</li>
+            </ul>
+
+            <h3>Для постоянной команды:</h3>
+            <ul class="checkmark-list">
+                <li>Все ассеты в одном месте</li>
+                <li>Экономия времени на рутинных операциях</li>
+            </ul>
+
+            <h3>Для компании:</h3>
+            <ul class="checkmark-list">
+                <li>Повышение качества дизайн-продуктов</li>
+                <li>Снижение количества ошибок в айдентике</li>
+                <li>Ускорение процессов разработки</li>
+            </ul>
+        </div>
+
+        <!-- Слайд 8: План действий -->
+        <div class="slide">
+            <span class="slide-number">8 / 9</span>
+            <h2>План действий</h2>
+            
+            <ul class="action-list">
+                <li><strong>Конвертация в векторный формат</strong> — перевод всех элементов в Adobe Illustrator</li>
+                <li><strong>Организация слоев</strong> — структурирование по категориям (логотипы, цвета, паттерны)</li>
+                <li><strong>Сохранение текстов</strong> — обеспечение возможности копирования</li>
+                <li><strong>Экспорт ассетов</strong> — подготовка отдельных файлов в правильных форматах</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <p style="font-size: 1.5em; color: #8A00F4;"><strong>Результат:</strong> профессиональный инструмент для эффективной работы</p>
+            </div>
+        </div>
+
+        <!-- Слайд 9: Финальный слайд -->
+        <div class="slide final-slide">
+            <span class="slide-number">9 / 9</span>
+            <div style="text-align: center;">
+                <h2 style="font-size: 3em; margin-bottom: 50px;">Спасибо за внимание!</h2>
+                
+                <div style="margin: 50px 0;">
+                    <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #E600AD, #8A00F4); padding: 5px; margin: 0 auto 40px; box-shadow: 0 10px 30px rgba(230, 0, 173, 0.3);">
+                        <img src="https://i.ibb.co/R4PknM93/Artboard-1-2x.png" alt="Mike Maro Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: white;">
+                    </div>
+                    
+                    <p style="font-size: 1.4em; color: #666; margin-bottom: 10px;">Презентацию подготовил</p>
+                    <p style="font-size: 2em; font-weight: 700; color: #333; margin-bottom: 10px;">Михаил Маро</p>
+                    <p style="font-size: 1.4em; color: #8A00F4; margin-bottom: 30px;">Арт-директор Studio 37</p>
+                    
+                    <a href="https://studio37.team/" target="_blank" class="site-link" style="font-size: 1.2em; color: #E600AD; text-decoration: none; display: inline-block; padding: 12px 30px; border: 2px solid #E600AD; border-radius: 30px; font-weight: 500;">studio37.team</a>
+                </div>
+                
+                <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee;">
+                    <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">Для связи и обсуждения проектов</p>
+                    <a href="https://t.me/mdx37" target="_blank" class="telegram-link" style="font-size: 1.3em; color: white; background: linear-gradient(135deg, #E600AD, #8A00F4); text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 15px 40px; border-radius: 30px; box-shadow: 0 4px 15px rgba(230, 0, 173, 0.3);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                        </svg>
+                        Написать в Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress"></div>
+    <div class="navigation-hint">Используйте пробел, клик или стрелки для навигации</div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Создание индикаторов прогресса
+        function createProgressDots() {
+            const progressContainer = document.querySelector('.progress');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('progress-dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                progressContainer.appendChild(dot);
+            }
+        }
+
+        // Обновление индикаторов
+        function updateProgress() {
+            document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Переход к конкретному слайду
+        function goToSlide(slideIndex) {
+            slides[currentSlide].classList.remove('active');
+            slides[currentSlide].classList.add('prev');
+            
+            currentSlide = slideIndex;
+            
+            slides[currentSlide].classList.remove('prev');
+            slides[currentSlide].classList.add('active');
+            
+            updateProgress();
+        }
+
+        // Следующий слайд
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        // Предыдущий слайд
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        // Обработчики событий
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('progress-dot') && !e.target.tagName.match(/^(A|BUTTON)$/i)) {
+                nextSlide();
+            }
+        });
+
+        // Поддержка свайпов на мобильных устройствах
+        let touchStartX = null;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!touchStartX) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+            
+            touchStartX = null;
+        });
+
+        // Инициализация
+        createProgressDots();
+    </script>
+</body>
+</html>
